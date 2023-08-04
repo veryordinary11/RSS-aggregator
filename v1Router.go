@@ -15,6 +15,7 @@ func createV1Router(apiCfg *apiConfig) http.Handler {
 
 	//User endpoints
 	v1Router.Post("/users", apiCfg.handlerCreateUser)
+	v1Router.Get("/users", apiCfg.handlerGetUser)
 
 	return v1Router
 }
