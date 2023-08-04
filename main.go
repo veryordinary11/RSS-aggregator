@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -8,9 +9,13 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
+	"github.com/veryordinary11/RSS-aggregator/internal/database"
+
+	_ "github.com/lib/pq"
 )
 
 type apiConfig struct {
+	DB *database.Queries
 }
 
 func main() {
@@ -22,6 +27,16 @@ func main() {
 
 	// Get the value of PORT
 	port := os.Getenv("PORT")
+	dbURL := os.Getenv("DB_URL")
+
+	conn, err := sql.Open("postgres", dbURL)
+	if err != nil {
+		panic(err)
+	}
+
+	apiCfg := &apiConfig{
+		DB: database.New(conn),
+	}
 
 	// Create a new chi router
 	router := chi.NewRouter()
@@ -35,8 +50,6 @@ func main() {
 		AllowCredentials: false,
 		MaxAge:           300,
 	}))
-
-	apiCfg := &apiConfig{}
 
 	v1Router := createV1Router(apiCfg)
 

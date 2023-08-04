@@ -13,5 +13,8 @@ func createV1Router(apiCfg *apiConfig) http.Handler {
 	v1Router.Get("/healthz", handlerReadiness)
 	v1Router.Get("/err", handlerErr)
 
+	//User endpoints
+	v1Router.Post("/users", apiCfg.handlerCreateUser)
+
 	return v1Router
 }
