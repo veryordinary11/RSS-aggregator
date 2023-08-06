@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -34,9 +35,12 @@ func main() {
 		panic(err)
 	}
 
+	db := database.New(conn)
 	apiCfg := &apiConfig{
-		DB: database.New(conn),
+		DB: db,
 	}
+
+	go startScraping(db, 10, time.Minute)
 
 	// Create a new chi router
 	router := chi.NewRouter()
