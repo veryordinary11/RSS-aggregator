@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -38,4 +39,16 @@ func (apiCfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Reques
 
 func (apiCfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 	responseWithJSON(w, http.StatusOK, databaseUserToUser(user))
+}
+
+func (apiCfg *apiConfig) handlerGetPostsForUser(w http.ResponseWriter, r *http.Request, user database.User) {
+	posts, err := apiCfg.DB.GetPostsForUser(r.Context(), database.GetPostsForUserParams{
+		UserID: user.ID,
+		Limit:  100,
+	})
+	if err != nil {
+		responseWithError(w, http.StatusInternalServerError, fmt.Sprintf("Couldn't get posts for user: %s", err))
+	}
+
+	responseWithJSON(w, http.StatusOK, databasePostsToPosts(posts))
 }
